@@ -60,6 +60,31 @@ function doPost(e) {
       return response({ success: true });
     }
 
+    if (action === 'deleteRecipe') {
+      const rows = recipeSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0] === data.recipeId && rows[i][1] === data.userId) {
+          recipeSheet.deleteRow(i + 1);
+          return response({ success: true });
+        }
+      }
+      return response({ success: false, message: 'Receta no encontrada o no autorizada' });
+    }
+
+    if (action === 'editRecipe') {
+      const rows = recipeSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (rows[i][0] === data.recipeId && rows[i][1] === data.userId) {
+          const rowNum = i + 1;
+          recipeSheet.getRange(rowNum, 4).setValue(data.title);
+          recipeSheet.getRange(rowNum, 5).setValue(data.description);
+          recipeSheet.getRange(rowNum, 6).setValue(data.imageUrl);
+          return response({ success: true });
+        }
+      }
+      return response({ success: false, message: 'Receta no encontrada o no autorizada' });
+    }
+
   } catch (err) {
     return response({ success: false, message: err.toString() });
   }

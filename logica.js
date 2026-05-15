@@ -3,6 +3,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyIFQh2ZJns4-MN01Xl6DJE
 
 let currentUser = JSON.parse(localStorage.getItem('gastro_user')) || null;
 let currentTab = 'all';
+let editingRecipeId = null;
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
@@ -100,12 +101,25 @@ async function loadRecipes() {
         recipes.forEach(r => {
             const card = document.createElement('div');
             card.className = 'recipe-card glass';
+            
+            let actionButtons = '';
+            if (currentUser && r.userId === currentUser.id) {
+                const recipeJson = JSON.stringify(r).replace(/"/g, '&quot;');
+                actionButtons = `
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button onclick="editRecipeClick(${recipeJson})" style="padding: 0.5rem; font-size: 0.8rem; flex: 1;">Editar</button>
+                        <button onclick="deleteRecipeClick('${r.id}')" style="padding: 0.5rem; font-size: 0.8rem; flex: 1; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171;">Eliminar</button>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
                 <img src="${r.imageUrl || 'https://placehold.co/400x200/2a1b3d/ffffff?text=Sin+Imagen'}" class="recipe-img" alt="${r.title}">
                 <div class="recipe-content">
                     <div class="recipe-title">${r.title}</div>
                     <div class="recipe-meta">Por ${r.username} • ${new Date(r.timestamp).toLocaleDateString()}</div>
                     <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">${r.description}</p>
+                    ${actionButtons}
                 </div>
             `;
             container.appendChild(card);
@@ -123,6 +137,22 @@ function switchTab(tab, el) {
 }
 
 function openModal() {
+    editingRecipeId = null;
+    document.getElementById('modal-title').innerText = 'Nueva Receta';
+    document.getElementById('modal-submit-btn').innerText = 'Guardar Receta';
+    document.getElementById('recipe-title').value = '';
+    document.getElementById('recipe-image').value = '';
+    document.getElementById('recipe-desc').value = '';
+    document.getElementById('recipe-modal').classList.remove('hidden');
+}
+
+function editRecipeClick(recipe) {
+    editingRecipeId = recipe.id;
+    document.getElementById('modal-title').innerText = 'Editar Receta';
+    document.getElementById('modal-submit-btn').innerText = 'Actualizar Receta';
+    document.getElementById('recipe-title').value = recipe.title;
+    document.getElementById('recipe-image').value = recipe.imageUrl;
+    document.getElementById('recipe-desc').value = recipe.description;
     document.getElementById('recipe-modal').classList.remove('hidden');
 }
 
@@ -138,27 +168,54 @@ async function saveRecipe() {
     if (!title || !description) return alert('Título y descripción son obligatorios');
 
     try {
+        const payload = {
+            action: editingRecipeId ? 'editRecipe' : 'addRecipe',
+            userId: currentUser.id,
+            username: currentUser.username,
+            title,
+            imageUrl,
+            description
+        };
+        
+        if (editingRecipeId) {
+            payload.recipeId = editingRecipeId;
+        }
+
         const res = await fetch(API_URL, {
             method: 'POST',
-            body: JSON.stringify({
-                action: 'addRecipe',
-                userId: currentUser.id,
-                username: currentUser.username,
-                title,
-                imageUrl,
-                description
-            })
+            body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (data.success) {
             closeModal();
             loadRecipes();
-            // Limpiar form
-            document.getElementById('recipe-title').value = '';
-            document.getElementById('recipe-image').value = '';
-            document.getElementById('recipe-desc').value = '';
+        } else {
+            alert(data.message || 'Error al guardar la receta');
         }
     } catch (e) {
-        alert('Error al guardar la receta');
+        alert('Error de conexión');
+    }
+}
+
+async function deleteRecipeClick(recipeId) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta receta? Esta acción no se puede deshacer.')) return;
+
+    try {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'deleteRecipe',
+                recipeId: recipeId,
+                userId: currentUser.id
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            loadRecipes();
+        } else {
+            alert(data.message || 'Error al eliminar');
+        }
+    } catch (e) {
+        alert('Error de conexión');
     }
 }
