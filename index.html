@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastroCloud | Recetario Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">GastroCloud</div>
+        <div id="user-nav" class="hidden">
+            <span id="welcome-msg" style="margin-right: 1rem;"></span>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Auth Section -->
+        <div id="auth-section" class="auth-container glass">
+            <div id="login-form">
+                <h2>Iniciar Sesión</h2>
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="login-username" placeholder="ej: mauri">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+                <button onclick="login()">Entrar</button>
+                <button class="secondary" onclick="toggleAuth(false)">¿No tienes cuenta? Regístrate</button>
+            </div>
+
+            <div id="register-form" class="hidden">
+                <h2>Registro</h2>
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="reg-name" placeholder="Tu nombre">
+                </div>
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="reg-username" placeholder="ej: mauri">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-password" placeholder="••••••••">
+                </div>
+                <button onclick="register()">Crear Cuenta</button>
+                <button class="secondary" onclick="toggleAuth(true)">Ya tengo cuenta</button>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard" class="hidden">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('all', this)">Todas las Recetas</div>
+                <div class="tab" onclick="switchTab('mine', this)">Mis Recetas</div>
+            </div>
+
+            <div id="recipes-container" class="recipes-grid">
+                <!-- Recipes will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button id="add-recipe-btn" class="add-btn hidden" onclick="openModal()">+</button>
+
+    <!-- Add Recipe Modal -->
+    <div id="recipe-modal" class="modal hidden">
+        <div class="modal-content glass">
+            <h2>Nueva Receta</h2>
+            <div class="form-group">
+                <label>Título</label>
+                <input type="text" id="recipe-title" placeholder="ej: Pasta Carbonara">
+            </div>
+            <div class="form-group">
+                <label>URL de la Imagen</label>
+                <input type="text" id="recipe-image" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div class="form-group">
+                <label>Preparación</label>
+                <textarea id="recipe-desc" rows="5" placeholder="Escribe los pasos..."></textarea>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="saveRecipe()">Guardar Receta</button>
+                <button class="secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="logica.js"></script>
+</body>
+</html>
