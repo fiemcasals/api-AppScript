@@ -1,5 +1,5 @@
 // REEMPLAZA ESTA URL con la de tu despliegue de Google Apps Script
-const API_URL = 'https://script.google.com/macros/s/AKfycbyIFQh2ZJns4-MN01Xl6DJEKuSeaGlS5J5yzPnFvzcm5E-uN0wQjEq-Qi5SEYm-UPT-/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz9cgF7lNtWnVEIRllYgNaCPmaBaDXkuU9Xq7SNp-7efQySo3vNtHVqiISgFL5T4HbU/exec';
 
 let currentUser = JSON.parse(localStorage.getItem('gastro_user')) || null;
 let currentTab = 'all';
