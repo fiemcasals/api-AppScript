@@ -101,7 +101,7 @@ async function loadRecipes() {
             const card = document.createElement('div');
             card.className = 'recipe-card glass';
             card.innerHTML = `
-                <img src="${r.imageUrl || 'https://via.placeholder.com/400x200?text=Sin+Imagen'}" class="recipe-img" alt="${r.title}">
+                <img src="${r.imageUrl || 'https://placehold.co/400x200/2a1b3d/ffffff?text=Sin+Imagen'}" class="recipe-img" alt="${r.title}">
                 <div class="recipe-content">
                     <div class="recipe-title">${r.title}</div>
                     <div class="recipe-meta">Por ${r.username} • ${new Date(r.timestamp).toLocaleDateString()}</div>
